@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.sql.*" %>
 
@@ -27,6 +26,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -429,12 +429,8 @@
                 int totalPeriod = 0;
 
                 try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    Connection con = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/FarmManagement",
-                            "root",
-                            "0004"
-                    );
+                    // Use connection pool utility
+                    Connection con = com.example.util.DBConnection.getConnection();
 
                     String sql;
                     PreparedStatement ps;
@@ -554,6 +550,10 @@
             <%
                 }
 
+                rs.close();
+                ps.close();
+                con.close();
+
                 if (!hasData) {
             %>
             <tr>
@@ -572,8 +572,6 @@
             </tr>
             <%
                     }
-
-                    con.close();
                 } catch (Exception e) {
                     out.println("<tr><td colspan='5' style='color: var(--danger-color); padding: 2rem; text-align: center;'>Error: " + e.getMessage() + "</td></tr>");
                 }

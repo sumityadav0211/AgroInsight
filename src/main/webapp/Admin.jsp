@@ -35,20 +35,12 @@
     int totalCrops = 0;
 
     try {
-        // Database connection parameters
-        String url = "jdbc:mysql://localhost:3306/FarmManagement";
-        String user = "root"; // Change this to your MySQL username
-        String password = "0004"; // Change this to your MySQL password
-
-        // Load MySQL JDBC driver
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // Create connection
-        conn = DriverManager.getConnection(url, user, password);
+        // Use the connection pool utility
+        conn = com.example.util.DBConnection.getConnection();
         stmt = conn.createStatement();
 
-        // 1. Fetch total users from FarmData table
-        String usersQuery = "SELECT COUNT(*) as user_count FROM FarmData";
+        // 1. Fetch total users from farmdata table
+        String usersQuery = "SELECT COUNT(*) as user_count FROM farmdata";
         rs = stmt.executeQuery(usersQuery);
         if (rs.next()) {
             totalUsers = rs.getInt("user_count");
@@ -74,12 +66,12 @@
         // 4. Get total crops for regional distribution
         totalCrops = activeCrops + historyRecords;
 
-        // 5. Fetch regional distribution data
+        // 5. Fetch regional distribution data using ILIKE for case-insensitive matching
         String regionQuery = "SELECT " +
-                "SUM(CASE WHEN farmer_name LIKE '%Midwest%' OR farm_area LIKE '%MW%' THEN 1 ELSE 0 END) as midwest, " +
-                "SUM(CASE WHEN farmer_name LIKE '%Southern%' OR farm_area LIKE '%SO%' THEN 1 ELSE 0 END) as southern, " +
-                "SUM(CASE WHEN farmer_name LIKE '%Northeast%' OR farm_area LIKE '%NE%' THEN 1 ELSE 0 END) as northeast, " +
-                "SUM(CASE WHEN farmer_name LIKE '%Western%' OR farm_area LIKE '%WE%' THEN 1 ELSE 0 END) as western " +
+                "SUM(CASE WHEN farmer_name ILIKE '%Midwest%' OR farm_area::text ILIKE '%MW%' THEN 1 ELSE 0 END) as midwest, " +
+                "SUM(CASE WHEN farmer_name ILIKE '%Southern%' OR farm_area::text ILIKE '%SO%' THEN 1 ELSE 0 END) as southern, " +
+                "SUM(CASE WHEN farmer_name ILIKE '%Northeast%' OR farm_area::text ILIKE '%NE%' THEN 1 ELSE 0 END) as northeast, " +
+                "SUM(CASE WHEN farmer_name ILIKE '%Western%' OR farm_area::text ILIKE '%WE%' THEN 1 ELSE 0 END) as western " +
                 "FROM add_crop";
 
         rs = stmt.executeQuery(regionQuery);
@@ -101,10 +93,10 @@
             midwestCount = 25; southernCount = 25; northeastCount = 25; westernCount = 25;
         }
 
-        // 6. Fetch upcoming tasks based on crop dates
+        // 6. Fetch upcoming tasks based on crop dates (PostgreSQL version)
         String tasksQuery = "SELECT crop_name, farmer_name, crop_dates, " +
-                "DATEDIFF(crop_dates, CURDATE()) as days_until " +
-                "FROM add_crop WHERE crop_dates >= CURDATE() " +
+                "(crop_dates - CURRENT_DATE) as days_until " +
+                "FROM add_crop WHERE crop_dates >= CURRENT_DATE " +
                 "ORDER BY crop_dates LIMIT 4";
 
         rs = stmt.executeQuery(tasksQuery);
@@ -178,16 +170,16 @@
             upcomingTasks.add(task4);
         }
 
-        // 7. Fetch recent notifications (new user registrations, crop additions)
+        // 7. Fetch recent notifications (PostgreSQL version with EXTRACT)
         String notificationsQuery =
                 "(SELECT 'new_user' as type, username as title, created_at as notif_time, " +
-                        "TIMESTAMPDIFF(MINUTE, created_at, NOW()) as minutes_ago " +
-                        "FROM FarmData WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                        "EXTRACT(EPOCH FROM (NOW() - created_at))/60 as minutes_ago " +
+                        "FROM farmdata WHERE created_at >= NOW() - INTERVAL '7 days' " +
                         "ORDER BY created_at DESC LIMIT 2) " +
                         "UNION ALL " +
                         "(SELECT 'new_crop' as type, CONCAT(crop_name, ' - ', farmer_name) as title, crop_dates as notif_time, " +
-                        "TIMESTAMPDIFF(MINUTE, crop_dates, NOW()) as minutes_ago " +
-                        "FROM add_crop WHERE crop_dates >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                        "EXTRACT(EPOCH FROM (NOW() - crop_dates))/60 as minutes_ago " +
+                        "FROM add_crop WHERE crop_dates >= NOW() - INTERVAL '7 days' " +
                         "ORDER BY crop_dates DESC LIMIT 2) " +
                         "ORDER BY minutes_ago LIMIT 4";
 
@@ -337,6 +329,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;

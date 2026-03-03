@@ -25,19 +25,16 @@ public class MoveCurrent extends HttpServlet {
         int cropId = Integer.parseInt(request.getParameter("cropId"));
 
         Connection con = null;
+        PreparedStatement insert = null;
+        PreparedStatement delete = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
-
-            con.setAutoCommit(false);
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
 
             // INSERT BACK TO CURRENT
-            PreparedStatement insert = con.prepareStatement(
+            insert = con.prepareStatement(
                     "INSERT INTO add_crop (username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period) " +
                             "SELECT username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
                             "FROM history_crop WHERE id=?"
@@ -46,14 +43,13 @@ public class MoveCurrent extends HttpServlet {
             insert.executeUpdate();
 
             // DELETE FROM HISTORY
-            PreparedStatement delete = con.prepareStatement(
+            delete = con.prepareStatement(
                     "DELETE FROM history_crop WHERE id=?"
             );
             delete.setInt(1, cropId);
             delete.executeUpdate();
 
-            con.commit();
-            con.close();
+            con.commit(); // Commit transaction
 
             response.sendRedirect("viewCrops.jsp?type=history");
 
@@ -63,6 +59,10 @@ public class MoveCurrent extends HttpServlet {
             } catch (Exception ignored) {}
             e.printStackTrace();
             throw new ServletException(e);
+        } finally {
+            try { if (insert != null) insert.close(); } catch (Exception ignored) {}
+            try { if (delete != null) delete.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

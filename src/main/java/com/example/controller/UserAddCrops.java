@@ -39,19 +39,17 @@ public class UserAddCrops extends HttpServlet {
         String farmArea = request.getParameter("farmArea");
         String cropName = request.getParameter("cropName");
         String contactNumber = request.getParameter("contactNumber");
-        String date = request.getParameter("date");
+        String date = request.getParameter("date");   // yyyy-MM-dd
         String period = request.getParameter("period");
 
+        Connection con = null;
+        PreparedStatement ps = null;
+
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
 
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
-
-            PreparedStatement ps = con.prepareStatement(
+            ps = con.prepareStatement(
                     "INSERT INTO add_crop " +
                             "(farmer_name, farm_area, crop_name, contact_number, crop_dates, period, username) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -61,19 +59,23 @@ public class UserAddCrops extends HttpServlet {
             ps.setString(2, farmArea);
             ps.setString(3, cropName);
             ps.setString(4, contactNumber);
-            ps.setString(5, date);
+
+            // ✅ Convert String to SQL Date
+            ps.setDate(5, Date.valueOf(date));
+
             ps.setString(6, period);
             ps.setString(7, finalUsername);
 
             ps.executeUpdate();
-            con.close();
 
-            // Redirect (same page for admin & user in your original logic)
             response.sendRedirect("addcrop.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new ServletException(e);
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

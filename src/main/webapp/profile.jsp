@@ -36,14 +36,11 @@
     List<Map<String, String>> recentActivities = new ArrayList<>();
 
     try {
-        // Load JDBC driver
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        // Use connection pool utility
+        conn = com.example.util.DBConnection.getConnection();
 
-        // Establish connection - UPDATE YOUR PASSWORD HERE
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/FarmManagement", "root", "0004");
-
-        // Fetch user details from FarmData table
-        String userQuery = "SELECT * FROM FarmData WHERE email = ?";
+        // Fetch user details from farmdata table
+        String userQuery = "SELECT * FROM farmdata WHERE email = ?";
         pstmt = conn.prepareStatement(userQuery);
         pstmt.setString(1, userEmail);
         rs = pstmt.executeQuery();
@@ -90,7 +87,7 @@
             successRate = Math.round((historyCropsCount * 100.0 / totalCropsCount) * 100) / 100.0;
         }
 
-        // Fetch recent activities from both crop tables
+        // Fetch recent activities from both crop tables (PostgreSQL)
         String recentActivityQuery = "SELECT 'Added' as action, crop_name, crop_dates as activity_date FROM add_crop WHERE username = ? " +
                 "UNION ALL " +
                 "SELECT 'Completed' as action, crop_name, crop_dates as activity_date FROM history_crop WHERE username = ? " +
@@ -142,6 +139,7 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;

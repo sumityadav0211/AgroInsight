@@ -27,25 +27,25 @@ public class UpdateUser extends HttpServlet {
         String newEmail = request.getParameter("email");
 
         Connection con = null;
+        PreparedStatement psGet = null;
+        PreparedStatement psUser = null;
+        PreparedStatement psAddCrop = null;
+        PreparedStatement psHistory = null;
+        ResultSet rs = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
-
-            con.setAutoCommit(false); // 🔒 START TRANSACTION
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
 
             /* ================= GET OLD USERNAME ================= */
             String oldUsername;
 
-            PreparedStatement psGet = con.prepareStatement(
-                    "SELECT username FROM FarmData WHERE id=?"
+            psGet = con.prepareStatement(
+                    "SELECT username FROM farmdata WHERE id=?"
             );
             psGet.setInt(1, userId);
-            ResultSet rs = psGet.executeQuery();
+            rs = psGet.executeQuery();
 
             if (rs.next()) {
                 oldUsername = rs.getString("username");
@@ -53,9 +53,9 @@ public class UpdateUser extends HttpServlet {
                 throw new SQLException("User not found");
             }
 
-            /* ================= UPDATE FarmData ================= */
-            PreparedStatement psUser = con.prepareStatement(
-                    "UPDATE FarmData SET username=?, email=? WHERE id=?"
+            /* ================= UPDATE farmdata ================= */
+            psUser = con.prepareStatement(
+                    "UPDATE farmdata SET username=?, email=? WHERE id=?"
             );
             psUser.setString(1, newUsername);
             psUser.setString(2, newEmail);
@@ -63,7 +63,7 @@ public class UpdateUser extends HttpServlet {
             psUser.executeUpdate();
 
             /* ================= UPDATE add_crop ================= */
-            PreparedStatement psAddCrop = con.prepareStatement(
+            psAddCrop = con.prepareStatement(
                     "UPDATE add_crop SET username=? WHERE username=?"
             );
             psAddCrop.setString(1, newUsername);
@@ -71,7 +71,7 @@ public class UpdateUser extends HttpServlet {
             psAddCrop.executeUpdate();
 
             /* ================= UPDATE history_crop ================= */
-            PreparedStatement psHistory = con.prepareStatement(
+            psHistory = con.prepareStatement(
                     "UPDATE history_crop SET username=? WHERE username=?"
             );
             psHistory.setString(1, newUsername);
@@ -84,16 +84,19 @@ public class UpdateUser extends HttpServlet {
 
         } catch (Exception e) {
             try {
-                if (con != null) con.rollback(); // ❌ ROLLBACK
+                if (con != null) con.rollback();
             } catch (SQLException ignored) {}
 
             e.printStackTrace();
             response.sendRedirect("adminUser.jsp?error=true");
 
         } finally {
-            try {
-                if (con != null) con.close();
-            } catch (SQLException ignored) {}
+            try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+            try { if (psGet != null) psGet.close(); } catch (Exception ignored) {}
+            try { if (psUser != null) psUser.close(); } catch (Exception ignored) {}
+            try { if (psAddCrop != null) psAddCrop.close(); } catch (Exception ignored) {}
+            try { if (psHistory != null) psHistory.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

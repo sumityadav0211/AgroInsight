@@ -27,37 +27,33 @@ public class MoveToHistory extends HttpServlet {
         int cropId = Integer.parseInt(request.getParameter("cropId"));
 
         Connection con = null;
+        PreparedStatement psInsert = null;
+        PreparedStatement psDelete = null;
+
+        response.setContentType("text/plain");
         PrintWriter out = response.getWriter();
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
-
-            con.setAutoCommit(false); // 🔁 TRANSACTION
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
 
             /* ================= COPY TO HISTORY ================= */
             String insertSql;
 
             if ("admin".equals(role)) {
-                // ADMIN → MOVE ANY USER CROP
                 insertSql =
                         "INSERT INTO history_crop (username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period) " +
                                 "SELECT username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
                                 "FROM add_crop WHERE id=?";
             } else {
-                // USER → MOVE OWN CROP ONLY
                 insertSql =
                         "INSERT INTO history_crop (username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period) " +
                                 "SELECT username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
                                 "FROM add_crop WHERE id=? AND username=?";
             }
 
-            PreparedStatement psInsert = con.prepareStatement(insertSql);
+            psInsert = con.prepareStatement(insertSql);
             psInsert.setInt(1, cropId);
 
             if (!"admin".equals(role)) {
@@ -82,7 +78,7 @@ public class MoveToHistory extends HttpServlet {
                 deleteSql = "DELETE FROM add_crop WHERE id=? AND username=?";
             }
 
-            PreparedStatement psDelete = con.prepareStatement(deleteSql);
+            psDelete = con.prepareStatement(deleteSql);
             psDelete.setInt(1, cropId);
 
             if (!"admin".equals(role)) {
@@ -98,7 +94,8 @@ public class MoveToHistory extends HttpServlet {
                 return;
             }
 
-            con.commit();
+            con.commit(); // ✅ Commit transaction
+
             response.setStatus(HttpServletResponse.SC_OK);
             out.write("SUCCESS");
 
@@ -108,11 +105,11 @@ public class MoveToHistory extends HttpServlet {
             } catch (Exception ignored) {}
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.write("ERROR: " + e.getMessage());
+            out.write("ERROR");
         } finally {
-            try {
-                if (con != null) con.close();
-            } catch (Exception ignored) {}
+            try { if (psInsert != null) psInsert.close(); } catch (Exception ignored) {}
+            try { if (psDelete != null) psDelete.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

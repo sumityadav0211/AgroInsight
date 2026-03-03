@@ -26,72 +26,86 @@ public class register extends HttpServlet {
 
         Map<String, Object> jsonResponse = new HashMap<>();
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection con = null;
+        PreparedStatement checkUsernamePs = null;
+        PreparedStatement checkEmailPs = null;
+        PreparedStatement insertPs = null;
+        ResultSet rsUsername = null;
+        ResultSet rsEmail = null;
 
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
+        try {
+            // ✅ Use Neon PostgreSQL connection
+            con = DBConnection.getConnection();
 
             /* CHECK IF USERNAME EXISTS */
-            PreparedStatement checkUsernamePs = con.prepareStatement(
-                    "SELECT * FROM FarmData WHERE username = ?"
+            checkUsernamePs = con.prepareStatement(
+                    "SELECT id FROM farmdata WHERE username = ?"
             );
             checkUsernamePs.setString(1, username);
-            ResultSet rsUsername = checkUsernamePs.executeQuery();
+            rsUsername = checkUsernamePs.executeQuery();
+
+            boolean usernameExists = rsUsername.next();
 
             /* CHECK IF EMAIL EXISTS */
-            PreparedStatement checkEmailPs = con.prepareStatement(
-                    "SELECT * FROM FarmData WHERE email = ?"
+            checkEmailPs = con.prepareStatement(
+                    "SELECT id FROM farmdata WHERE email = ?"
             );
             checkEmailPs.setString(1, email);
-            ResultSet rsEmail = checkEmailPs.executeQuery();
+            rsEmail = checkEmailPs.executeQuery();
 
-            if (rsUsername.next() && rsEmail.next()) {
-                // Both username and email exist
+            boolean emailExists = rsEmail.next();
+
+            if (usernameExists && emailExists) {
+
                 jsonResponse.put("success", false);
                 jsonResponse.put("error", "both_exist");
                 jsonResponse.put("message", "Username and email already exist. Please use different credentials.");
                 jsonResponse.put("field", "both");
-            }
-            else if (rsUsername.next()) {
-                // Username already exists
+
+            } else if (usernameExists) {
+
                 jsonResponse.put("success", false);
                 jsonResponse.put("error", "username_exists");
                 jsonResponse.put("message", "This username is already taken. Please choose a different username.");
                 jsonResponse.put("field", "username");
-            }
-            else if (rsEmail.next()) {
-                // Email already exists
+
+            } else if (emailExists) {
+
                 jsonResponse.put("success", false);
                 jsonResponse.put("error", "email_exists");
                 jsonResponse.put("message", "This email is already registered. Please use a different email or login.");
                 jsonResponse.put("field", "email");
-            }
-            else {
-                // INSERT NEW USER
-                PreparedStatement ps = con.prepareStatement(
-                        "INSERT INTO FarmData (username, email, user_password) VALUES (?, ?, ?)"
-                );
-                ps.setString(1, username);
-                ps.setString(2, email);
-                ps.setString(3, password);
 
-                ps.executeUpdate();
+            } else {
+
+                /* INSERT NEW USER */
+                insertPs = con.prepareStatement(
+                        "INSERT INTO farmdata (username, email, user_password, email_verified, created_at) " +
+                                "VALUES (?, ?, ?, false, NOW())"
+                );
+
+                insertPs.setString(1, username);
+                insertPs.setString(2, email);
+                insertPs.setString(3, password);
+
+                insertPs.executeUpdate();
 
                 jsonResponse.put("success", true);
                 jsonResponse.put("message", "Registration successful! Please login with your credentials.");
             }
-
-            con.close();
 
         } catch (Exception e) {
             e.printStackTrace();
             jsonResponse.put("success", false);
             jsonResponse.put("error", "server_error");
             jsonResponse.put("message", "An error occurred during registration. Please try again.");
+        } finally {
+            try { if (rsUsername != null) rsUsername.close(); } catch (Exception ignored) {}
+            try { if (rsEmail != null) rsEmail.close(); } catch (Exception ignored) {}
+            try { if (checkUsernamePs != null) checkUsernamePs.close(); } catch (Exception ignored) {}
+            try { if (checkEmailPs != null) checkEmailPs.close(); } catch (Exception ignored) {}
+            try { if (insertPs != null) insertPs.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
 
         response.getWriter().write(new Gson().toJson(jsonResponse));

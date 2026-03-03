@@ -10,10 +10,6 @@ import java.sql.*;
 @WebServlet("/EditCrop")
 public class EditCrop extends HttpServlet {
 
-    private final String URL = "jdbc:mysql://localhost:3306/FarmManagement";
-    private final String USER = "root";
-    private final String PASS = "0004";
-
     // ================= LOAD EDIT PAGE =================
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -32,16 +28,20 @@ public class EditCrop extends HttpServlet {
             return;
         }
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(URL, USER, PASS);
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-            PreparedStatement ps = con.prepareStatement(
+        try {
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
+
+            ps = con.prepareStatement(
                     "SELECT * FROM add_crop WHERE id=?"
             );
             ps.setInt(1, Integer.parseInt(cropId));
 
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
 
             if (rs.next()) {
                 request.setAttribute("cropId", rs.getInt("id") + "");
@@ -49,7 +49,7 @@ public class EditCrop extends HttpServlet {
                 request.setAttribute("farmArea", rs.getString("farm_area"));
                 request.setAttribute("cropName", rs.getString("crop_name"));
                 request.setAttribute("contactNumber", rs.getString("contact_number"));
-                request.setAttribute("cropDate", rs.getString("crop_dates"));
+                request.setAttribute("cropDate", rs.getDate("crop_dates"));
                 request.setAttribute("period", rs.getString("period"));
 
                 request.getRequestDispatcher("editCrop.jsp").forward(request, response);
@@ -57,11 +57,13 @@ public class EditCrop extends HttpServlet {
                 response.sendRedirect("currentCrop.jsp?error=notfound");
             }
 
-            con.close();
-
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("currentCrop.jsp?error=load");
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 
@@ -84,11 +86,14 @@ public class EditCrop extends HttpServlet {
         String date = request.getParameter("date");
         String period = request.getParameter("period");
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(URL, USER, PASS);
+        Connection con = null;
+        PreparedStatement ps = null;
 
-            PreparedStatement ps = con.prepareStatement(
+        try {
+            // ✅ Use PostgreSQL connection
+            con = DBConnection.getConnection();
+
+            ps = con.prepareStatement(
                     "UPDATE add_crop SET farmer_name=?, farm_area=?, crop_name=?, contact_number=?, crop_dates=?, period=? WHERE id=?"
             );
 
@@ -96,12 +101,14 @@ public class EditCrop extends HttpServlet {
             ps.setString(2, farmArea);
             ps.setString(3, cropName);
             ps.setString(4, contactNumber);
-            ps.setString(5, date);
+
+            // ✅ Convert String date to SQL Date
+            ps.setDate(5, Date.valueOf(date));
+
             ps.setString(6, period);
             ps.setInt(7, Integer.parseInt(cropId));
 
             int rows = ps.executeUpdate();
-            con.close();
 
             if (rows > 0) {
                 response.sendRedirect("currentCrop.jsp?success=updated");
@@ -112,6 +119,9 @@ public class EditCrop extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("currentCrop.jsp?error=database");
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

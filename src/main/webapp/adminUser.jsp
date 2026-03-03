@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -424,28 +425,26 @@
             <tbody id="userTableBody">
             <%
                 try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/FarmManagement",
-                            "root",
-                            "0004")) {
+                    // Use connection pool utility
+                    Connection con = com.example.util.DBConnection.getConnection();
 
-                        // Get users with their email_verified status
-                        PreparedStatement ps = con.prepareStatement(
-                                "SELECT id, username, email, email_verified, created_at FROM FarmData ORDER BY id DESC"
-                        );
-                        ResultSet rs = ps.executeQuery();
+                    // Get users with their email_verified status (PostgreSQL)
+                    PreparedStatement ps = con.prepareStatement(
+                            "SELECT id, username, email, email_verified, created_at FROM farmdata ORDER BY id DESC"
+                    );
+                    ResultSet rs = ps.executeQuery();
 
-                        while (rs.next()) {
-                            String username = rs.getString("username");
-                            String email = rs.getString("email");
-                            int userId = rs.getInt("id");
-                            boolean emailVerified = rs.getBoolean("email_verified");
-                            String initial = username.substring(0,1).toUpperCase();
+                    while (rs.next()) {
+                        String username = rs.getString("username");
+                        String email = rs.getString("email");
+                        int userId = rs.getInt("id");
+                        boolean emailVerified = rs.getBoolean("email_verified");
+                        String initial = username.substring(0,1).toUpperCase();
 
-                            // Determine status class and icon
-                            String statusClass = emailVerified ? "status-active" : "status-pending";
-                            String statusIcon = emailVerified ? "bx-check-circle" : "bx-time";
-                            String statusText = emailVerified ? "Active" : "Pending";
+                        // Determine status class and icon
+                        String statusClass = emailVerified ? "status-active" : "status-pending";
+                        String statusIcon = emailVerified ? "bx-check-circle" : "bx-time";
+                        String statusText = emailVerified ? "Active" : "Pending";
             %>
             <tr class="user-row" data-status="<%= emailVerified ? "active" : "pending" %>">
                 <td>
@@ -486,8 +485,10 @@
                 </td>
             </tr>
             <%
-                        }
                     }
+                    rs.close();
+                    ps.close();
+                    con.close();
                 } catch (Exception e) {
                     out.println("<tr><td colspan='4' style='color: var(--danger-color); padding: 2rem; text-align: center;'>Error loading users: " + e.getMessage() + "</td></tr>");
                 }

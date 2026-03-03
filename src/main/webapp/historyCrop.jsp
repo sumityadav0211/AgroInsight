@@ -19,6 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -370,12 +371,8 @@
         int periodSum = 0;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
+            // Use connection pool utility
+            Connection con = com.example.util.DBConnection.getConnection();
 
             PreparedStatement ps = con.prepareStatement(
                     "SELECT farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM history_crop"
@@ -436,6 +433,10 @@
         <%
             }
 
+            rs.close();
+            ps.close();
+            con.close();
+
             if (!hasData) {
         %>
         <div class="no-history">
@@ -445,8 +446,6 @@
         </div>
         <%
                 }
-
-                con.close();
             } catch (Exception e) {
                 out.println("<div class='no-history' style='color: var(--danger-color);'>Error loading history: " + e.getMessage() + "</div>");
             }

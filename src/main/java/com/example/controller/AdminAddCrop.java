@@ -10,10 +10,6 @@ import java.sql.*;
 @WebServlet("/AdminAddCrop")
 public class AdminAddCrop extends HttpServlet {
 
-    private final String URL = "jdbc:mysql://localhost:3306/FarmManagement";
-    private final String USER = "root";
-    private final String PASS = "0004";
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -24,7 +20,7 @@ public class AdminAddCrop extends HttpServlet {
             return;
         }
 
-        String username = request.getParameter("targetUser"); // ✅ Important
+        String username = request.getParameter("targetUser");
 
         String farmerName = request.getParameter("farmerName");
         String farmArea = request.getParameter("farmArea");
@@ -33,30 +29,40 @@ public class AdminAddCrop extends HttpServlet {
         String date = request.getParameter("date");
         String period = request.getParameter("period");
 
+        Connection con = null;
+        PreparedStatement ps = null;
+
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(URL, USER, PASS);
+            // ✅ Use Neon PostgreSQL connection
+            con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
-                    "INSERT INTO add_crop (username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period) VALUES (?, ?, ?, ?, ?, ?, ?)"
-            );
+            String sql = "INSERT INTO add_crop " +
+                    "(username, farmer_name, farm_area, crop_name, contact_number, crop_dates, period) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            ps.setString(1, username);  // ✅ specific user
+            ps = con.prepareStatement(sql);
+
+            ps.setString(1, username);
             ps.setString(2, farmerName);
             ps.setString(3, farmArea);
             ps.setString(4, cropName);
             ps.setString(5, contactNumber);
-            ps.setString(6, date);
+
+            // ✅ Convert String date to SQL Date
+            ps.setDate(6, Date.valueOf(date));
+
             ps.setString(7, period);
 
             ps.executeUpdate();
-            con.close();
 
             response.sendRedirect("viewCrops.jsp?type=current&username=" + username);
 
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("adminUser.jsp?error=database");
+        } finally {
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

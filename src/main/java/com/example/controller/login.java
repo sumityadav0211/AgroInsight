@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
@@ -24,25 +25,26 @@ public class login extends HttpServlet {
 
         Map<String, Object> jsonResponse = new HashMap<>();
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection con = null;
+        PreparedStatement psAdmin = null;
+        PreparedStatement psUser = null;
+        ResultSet rsAdmin = null;
+        ResultSet rsUser = null;
 
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/FarmManagement",
-                    "root",
-                    "0004"
-            );
+        try {
+            // ✅ Use Neon PostgreSQL connection
+            con = DBConnection.getConnection();
 
             HttpSession session = request.getSession();
 
             /* ========= CHECK ADMIN ========= */
-            PreparedStatement psAdmin = con.prepareStatement(
+            psAdmin = con.prepareStatement(
                     "SELECT username, email FROM admin WHERE username=? AND user_password=?"
             );
             psAdmin.setString(1, username);
             psAdmin.setString(2, password);
 
-            ResultSet rsAdmin = psAdmin.executeQuery();
+            rsAdmin = psAdmin.executeQuery();
 
             if (rsAdmin.next()) {
                 session.setAttribute("username", rsAdmin.getString("username"));
@@ -54,18 +56,18 @@ public class login extends HttpServlet {
                 jsonResponse.put("redirect", "index.jsp");
 
                 response.getWriter().write(new Gson().toJson(jsonResponse));
-                con.close();
                 return;
             }
 
             /* ========= CHECK NORMAL USER ========= */
-            PreparedStatement psUser = con.prepareStatement(
-                    "SELECT username, email FROM FarmData WHERE username=? AND user_password=?"
+            // ⚠️ Make sure table name is lowercase in Neon: farmdata
+            psUser = con.prepareStatement(
+                    "SELECT username, email FROM farmdata WHERE username=? AND user_password=?"
             );
             psUser.setString(1, username);
             psUser.setString(2, password);
 
-            ResultSet rsUser = psUser.executeQuery();
+            rsUser = psUser.executeQuery();
 
             if (rsUser.next()) {
                 session.setAttribute("username", rsUser.getString("username"));
@@ -81,13 +83,17 @@ public class login extends HttpServlet {
                 jsonResponse.put("message", "Invalid username or password. Please try again.");
             }
 
-            con.close();
-
         } catch (Exception e) {
             e.printStackTrace();
             jsonResponse.put("success", false);
             jsonResponse.put("error", "server_error");
             jsonResponse.put("message", "An error occurred. Please try again.");
+        } finally {
+            try { if (rsAdmin != null) rsAdmin.close(); } catch (Exception ignored) {}
+            try { if (rsUser != null) rsUser.close(); } catch (Exception ignored) {}
+            try { if (psAdmin != null) psAdmin.close(); } catch (Exception ignored) {}
+            try { if (psUser != null) psUser.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
 
         response.getWriter().write(new Gson().toJson(jsonResponse));

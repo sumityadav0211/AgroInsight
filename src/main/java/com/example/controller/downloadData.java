@@ -19,7 +19,7 @@ public class downloadData extends HttpServlet {
         String username = (String) session.getAttribute("username");
         String farmerName = (String) session.getAttribute("farmerName");
 
-        if(username == null){
+        if (username == null) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -32,20 +32,21 @@ public class downloadData extends HttpServlet {
 
         out.println("FarmerName,Username,Crop,Area,Yield,Revenue");
 
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
         try {
-            Connection con = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/agriculture_db",
-                    "root",
-                    "password"
-            );
+            // ✅ Use Neon PostgreSQL connection
+            con = DBConnection.getConnection();
 
             String sql = "SELECT crop_name, area, yield, revenue FROM crop_data WHERE username=?";
-            PreparedStatement ps = con.prepareStatement(sql);
+            ps = con.prepareStatement(sql);
             ps.setString(1, username);
 
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
 
-            while(rs.next()) {
+            while (rs.next()) {
 
                 out.println(
                         farmerName + "," +
@@ -57,11 +58,13 @@ public class downloadData extends HttpServlet {
                 );
             }
 
-            con.close();
-
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             out.println("Error Generating Report");
+        } finally {
+            try { if (rs != null) rs.close(); } catch (Exception ignored) {}
+            try { if (ps != null) ps.close(); } catch (Exception ignored) {}
+            try { if (con != null) con.close(); } catch (Exception ignored) {}
         }
     }
 }

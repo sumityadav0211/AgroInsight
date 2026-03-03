@@ -34,15 +34,11 @@
     int[] monthlyData = new int[12];
 
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/FarmManagement",
-                "root",
-                "0004"
-        );
+        // Use connection pool utility
+        conn = com.example.util.DBConnection.getConnection();
 
         // Get all users
-        String userQuery = "SELECT id, username, email, email_verified, created_at FROM FarmData ORDER BY created_at DESC";
+        String userQuery = "SELECT id, username, email, email_verified, created_at FROM farmdata ORDER BY created_at DESC";
         pstmt = conn.prepareStatement(userQuery);
         rs = pstmt.executeQuery();
 
@@ -88,7 +84,7 @@
             cropCount.put(cropName, cropCount.getOrDefault(cropName, 0) + 1);
             cropArea.put(cropName, cropArea.getOrDefault(cropName, 0.0) + rs.getDouble("farm_area"));
 
-            // Monthly data
+            // Monthly data (PostgreSQL EXTRACT)
             java.sql.Date cropDateSql = rs.getDate("crop_dates");
             if (cropDateSql != null) {
                 java.util.Calendar cal = java.util.Calendar.getInstance();
@@ -162,6 +158,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -1287,7 +1284,7 @@
         showAlert('success', 'Download Started', 'Complete system report is being generated');
     }
 
-    // Download selected user data - FIXED VERSION
+    // Download selected user data
     function downloadSelectedUser() {
         const select = document.getElementById('userSelect');
         const username = select.value;

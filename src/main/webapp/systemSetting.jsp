@@ -51,16 +51,12 @@
     List<Map<String, String>> recentActivities = new ArrayList<>();
 
     try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/FarmManagement",
-                "root",
-                "0004"
-        );
+        // Use connection pool utility
+        conn = com.example.util.DBConnection.getConnection();
         stmt = conn.createStatement();
 
         // Get database stats
-        rs = stmt.executeQuery("SELECT COUNT(*) as count FROM FarmData");
+        rs = stmt.executeQuery("SELECT COUNT(*) as count FROM farmdata");
         if (rs.next()) totalUsers = rs.getInt("count");
         rs.close();
 
@@ -72,14 +68,14 @@
         if (rs.next()) totalHistory = rs.getInt("count");
         rs.close();
 
-        // Get database size (MySQL specific)
-        rs = stmt.executeQuery("SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) as size FROM information_schema.tables WHERE table_schema = 'FarmManagement'");
+        // Get database size (PostgreSQL version)
+        rs = stmt.executeQuery("SELECT ROUND(SUM(pg_total_relation_size(relid)) / 1024 / 1024, 2) as size FROM pg_stat_user_tables WHERE schemaname = 'public'");
         if (rs.next()) dbSize = rs.getDouble("size");
         rs.close();
 
-        // Get recent user registrations
-        String userActivityQuery = "SELECT username, created_at as activity_time FROM FarmData " +
-                "WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+        // Get recent user registrations (PostgreSQL)
+        String userActivityQuery = "SELECT username, created_at as activity_time FROM farmdata " +
+                "WHERE created_at >= NOW() - INTERVAL '7 days' " +
                 "ORDER BY created_at DESC LIMIT 3";
         rs = stmt.executeQuery(userActivityQuery);
         while (rs.next()) {
@@ -97,7 +93,7 @@
 
         // Get recent crop additions
         String cropActivityQuery = "SELECT farmer_name, crop_name, crop_dates as activity_time FROM add_crop " +
-                "WHERE crop_dates >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                "WHERE crop_dates >= NOW() - INTERVAL '7 days' " +
                 "ORDER BY crop_dates DESC LIMIT 3";
         rs = stmt.executeQuery(cropActivityQuery);
         while (rs.next()) {
@@ -115,7 +111,7 @@
 
         // Get recent crop history/completions
         String historyActivityQuery = "SELECT farmer_name, crop_name, crop_dates as activity_time FROM history_crop " +
-                "WHERE crop_dates >= DATE_SUB(NOW(), INTERVAL 7 DAY) " +
+                "WHERE crop_dates >= NOW() - INTERVAL '7 days' " +
                 "ORDER BY crop_dates DESC LIMIT 2";
         rs = stmt.executeQuery(historyActivityQuery);
         while (rs.next()) {
@@ -193,6 +189,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;

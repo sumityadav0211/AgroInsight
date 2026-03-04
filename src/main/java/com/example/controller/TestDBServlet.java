@@ -22,6 +22,7 @@ public class TestDBServlet extends HttpServlet {
             out.println("<h2>Database Connected Successfully ✅</h2>");
         } else {
             out.println("<h2>Database Connection Failed ❌</h2>");
+            System.out.println("Test update");
         }
     }
 }

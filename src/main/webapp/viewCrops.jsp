@@ -22,12 +22,11 @@
 <html>
 <head>
     <title>Crop Management | AgroInsights</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Keep all existing CSS exactly the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -56,6 +55,7 @@
         body {
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
@@ -64,13 +64,19 @@
             margin: 0 auto;
         }
 
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+
         .page-header {
             text-align: center;
             margin-bottom: 2rem;
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             color: var(--primary-dark);
             margin-bottom: 0.5rem;
             font-weight: 700;
@@ -78,20 +84,23 @@
 
         .page-header p {
             color: var(--text-light);
-            font-size: 1.1rem;
+            font-size: clamp(0.85rem, 3vw, 1.1rem);
         }
 
         <% if ("admin".equals(role) && selectedUser != null) { %>
         .user-badge {
             background: linear-gradient(135deg, var(--secondary-color), #ffb74d);
             color: white;
-            padding: 1rem 2rem;
+            padding: 0.8rem 1.5rem;
             border-radius: var(--radius);
             display: inline-flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             margin: 1rem auto;
             box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            flex-wrap: wrap;
+            justify-content: center;
         }
         <% } %>
 
@@ -106,11 +115,12 @@
             box-shadow: var(--shadow);
             max-width: 400px;
             margin: 2rem auto;
+            flex-wrap: wrap;
         }
 
         .tab {
             flex: 1;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1.2rem;
             background: transparent;
             border: none;
             border-radius: 12px;
@@ -122,6 +132,17 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .tab {
+                padding: 0.6rem 0.8rem;
+            }
+            .tab span {
+                display: none;
+            }
         }
 
         .tab.active {
@@ -130,15 +151,11 @@
             box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
         }
 
-        .tab:hover:not(.active) {
-            background: var(--light-bg);
-        }
-
         .table-container {
             background: var(--card-bg);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            overflow: hidden;
+            overflow-x: auto;
             margin-bottom: 2rem;
         }
 
@@ -146,6 +163,7 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            min-width: 700px;
         }
 
         thead {
@@ -153,13 +171,19 @@
         }
 
         th {
-            padding: 1.2rem 1.5rem;
+            padding: 1rem 1.2rem;
             color: white;
             font-weight: 600;
             text-align: left;
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 0.8rem;
+            }
         }
 
         tbody tr {
@@ -169,23 +193,24 @@
 
         tbody tr:hover {
             background: var(--light-bg);
-            transform: translateY(-2px);
         }
 
         td {
-            padding: 1.2rem 1.5rem;
+            padding: 1rem 1.2rem;
             color: var(--text-dark);
             vertical-align: middle;
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
         }
 
         .crop-status {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
+            gap: 0.4rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 50px;
-            font-size: 0.85rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .status-current {
@@ -205,17 +230,27 @@
         }
 
         .btn-action {
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 0.8rem;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             font-weight: 500;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             transition: var(--transition);
             border: none;
             cursor: pointer;
+            background: transparent;
+        }
+
+        @media (max-width: 600px) {
+            .btn-action span {
+                display: none;
+            }
+            .btn-action {
+                padding: 0.5rem;
+            }
         }
 
         .btn-edit {
@@ -225,7 +260,6 @@
 
         .btn-edit:hover {
             background: rgba(46, 125, 50, 0.2);
-            transform: translateY(-2px);
         }
 
         .btn-delete {
@@ -235,7 +269,6 @@
 
         .btn-delete:hover {
             background: rgba(220, 53, 69, 0.2);
-            transform: translateY(-2px);
         }
 
         .btn-move {
@@ -245,12 +278,11 @@
 
         .btn-move:hover {
             background: rgba(255, 152, 0, 0.2);
-            transform: translateY(-2px);
         }
 
         .no-data {
             text-align: center;
-            padding: 3rem;
+            padding: 3rem 2rem;
             color: var(--text-light);
         }
 
@@ -258,6 +290,11 @@
             font-size: 3rem;
             margin-bottom: 1rem;
             color: var(--border-color);
+        }
+
+        .no-data h3 {
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            margin-bottom: 0.5rem;
         }
 
         .crop-details {
@@ -269,37 +306,52 @@
         .crop-name {
             font-weight: 600;
             color: var(--text-dark);
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
 
         .crop-meta {
-            font-size: 0.85rem;
+            font-size: 0.7rem;
             color: var(--text-light);
         }
 
         .summary-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
+        @media (max-width: 600px) {
+            .summary-cards {
+                gap: 1rem;
+            }
+        }
+
         .summary-card {
             background: var(--card-bg);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             text-align: center;
         }
 
         .summary-icon {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
+            margin: 0 auto 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 480px) {
+            .summary-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
         }
 
         .summary-card:nth-child(1) .summary-icon {
@@ -318,42 +370,86 @@
         }
 
         .summary-number {
-            font-size: 2rem;
+            font-size: clamp(1.3rem, 5vw, 2rem);
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.2rem;
         }
 
         .summary-label {
             color: var(--text-light);
-            font-size: 0.9rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
+        /* Alert Styles */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+            width: calc(100% - 40px);
+        }
 
-            .page-header h1 {
-                font-size: 2rem;
+        @media (max-width: 480px) {
+            .alert {
+                left: 20px;
+                right: 20px;
+                max-width: none;
             }
+        }
 
-            .tabs-container {
-                flex-direction: column;
-            }
+        .alert-success {
+            border-left: 4px solid var(--primary-color);
+        }
 
-            th, td {
-                padding: 0.8rem;
-            }
+        .alert-error {
+            border-left: 4px solid var(--danger-color);
+        }
 
-            .action-buttons {
-                flex-direction: column;
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-            .btn-action {
-                width: 100%;
-                justify-content: center;
-            }
+        .spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner-inner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -376,23 +472,17 @@
 
     <div class="summary-cards">
         <div class="summary-card">
-            <div class="summary-icon">
-                <i class='bx bx-leaf'></i>
-            </div>
+            <div class="summary-icon"><i class='bx bx-leaf'></i></div>
             <div class="summary-number" id="totalCrops">0</div>
             <div class="summary-label">Total Crops</div>
         </div>
         <div class="summary-card">
-            <div class="summary-icon">
-                <i class='bx bx-area'></i>
-            </div>
+            <div class="summary-icon"><i class='bx bx-area'></i></div>
             <div class="summary-number" id="totalArea">0</div>
             <div class="summary-label">Total Area (acres)</div>
         </div>
         <div class="summary-card">
-            <div class="summary-icon">
-                <i class='bx bx-calendar'></i>
-            </div>
+            <div class="summary-icon"><i class='bx bx-calendar'></i></div>
             <div class="summary-number" id="avgPeriod">0</div>
             <div class="summary-label">Avg Period (months)</div>
         </div>
@@ -402,12 +492,12 @@
         <button class="tab <%= "current".equals(type) ? "active" : "" %>"
                 onclick="window.location.href='viewCrops.jsp?type=current<%= (selectedUser != null ? "&username=" + selectedUser : "") %>'">
             <i class='bx bx-leaf'></i>
-            Current Crops
+            <span>Current Crops</span>
         </button>
         <button class="tab <%= "history".equals(type) ? "active" : "" %>"
                 onclick="window.location.href='viewCrops.jsp?type=history<%= (selectedUser != null ? "&username=" + selectedUser : "") %>'">
             <i class='bx bx-history'></i>
-            Crop History
+            <span>Crop History</span>
         </button>
     </div>
 
@@ -434,44 +524,36 @@
                 ResultSet rs = null;
 
                 try {
-                    // Use connection pool utility
                     con = DBConnection.getConnection();
-
                     String sql;
 
                     if ("history".equals(type)) {
                         if ("admin".equals(role)) {
                             if (selectedUser != null && !selectedUser.isEmpty()) {
-                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                        "FROM history_crop WHERE username=?";
+                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM history_crop WHERE username=?";
                                 ps = con.prepareStatement(sql);
                                 ps.setString(1, selectedUser);
                             } else {
-                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                        "FROM history_crop";
+                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM history_crop";
                                 ps = con.prepareStatement(sql);
                             }
                         } else {
-                            sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                    "FROM history_crop WHERE username=?";
+                            sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM history_crop WHERE username=?";
                             ps = con.prepareStatement(sql);
                             ps.setString(1, sessionUser);
                         }
                     } else {
                         if ("admin".equals(role)) {
                             if (selectedUser != null && !selectedUser.isEmpty()) {
-                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                        "FROM add_crop WHERE username=?";
+                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM add_crop WHERE username=?";
                                 ps = con.prepareStatement(sql);
                                 ps.setString(1, selectedUser);
                             } else {
-                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                        "FROM add_crop";
+                                sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM add_crop";
                                 ps = con.prepareStatement(sql);
                             }
                         } else {
-                            sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
-                                    "FROM add_crop WHERE username=?";
+                            sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM add_crop WHERE username=?";
                             ps = con.prepareStatement(sql);
                             ps.setString(1, sessionUser);
                         }
@@ -505,10 +587,10 @@
                     </div>
                 </td>
                 <td>
-                        <span class="crop-status <%= "current".equals(type) ? "status-current" : "status-history" %>">
-                            <i class='bx <%= "current".equals(type) ? "bx-check-circle" : "bx-history" %>'></i>
-                            <%= "current".equals(type) ? "Active" : "Completed" %>
-                        </span>
+                    <span class="crop-status <%= "current".equals(type) ? "status-current" : "status-history" %>">
+                        <i class='bx <%= "current".equals(type) ? "bx-check-circle" : "bx-history" %>'></i>
+                        <%= "current".equals(type) ? "Active" : "Completed" %>
+                    </span>
                 </td>
                 <td>
                     <div class="action-buttons">
@@ -520,14 +602,16 @@
                             <input type="hidden" name="username" value="<%= selectedUser %>">
                             <% } %>
                             <button type="submit" class="btn-action btn-edit">
-                                <i class='bx bx-edit'></i> Edit
+                                <i class='bx bx-edit'></i>
+                                <span>Edit</span>
                             </button>
                         </form>
 
                         <form action="DeleteCrop" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
                             <button type="submit" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to delete this crop?');">
-                                <i class='bx bx-trash'></i> Delete
+                                <i class='bx bx-trash'></i>
+                                <span>Delete</span>
                             </button>
                         </form>
                         <% } %>
@@ -536,14 +620,16 @@
                         <form action="MoveToHistory" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
                             <button type="submit" class="btn-action btn-move" onclick="return confirm('Are you sure you want to mark this crop as completed?');">
-                                <i class='bx bx-history'></i> Move
+                                <i class='bx bx-history'></i>
+                                <span>Move</span>
                             </button>
                         </form>
                         <% } else if ("admin".equals(role)) { %>
                         <form action="MoveCurrent" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
                             <button type="submit" class="btn-action btn-move" onclick="return confirm('Are you sure you want to restore this crop?');">
-                                <i class='bx bx-transfer'></i> Restore
+                                <i class='bx bx-transfer'></i>
+                                <span>Restore</span>
                             </button>
                         </form>
                         <% } %>
@@ -556,7 +642,6 @@
                 } catch (Exception e) {
                     out.println("<tr><td colspan='5' style='color: var(--danger-color); padding: 2rem; text-align: center;'>Error: " + e.getMessage() + "</td></tr>");
                 } finally {
-                    // Close resources
                     try { if (rs != null) rs.close(); } catch (Exception e) {}
                     try { if (ps != null) ps.close(); } catch (Exception e) {}
                     try { if (con != null) con.close(); } catch (Exception e) {}
@@ -571,7 +656,7 @@
             <h3>No crop data found</h3>
             <p><%= "current".equals(type) ? "Add your first crop to get started" : "No historical records available" %></p>
             <% if ("current".equals(type)) { %>
-            <a href="addcrop.jsp" class="btn-action btn-edit" style="margin-top: 1rem; display: inline-flex;">
+            <a href="addcrop.jsp" class="btn-action btn-edit" style="margin-top: 1rem; display: inline-flex; padding: 0.8rem 1.5rem;">
                 <i class='bx bx-plus'></i> Add New Crop
             </a>
             <% } %>
@@ -581,7 +666,6 @@
 </div>
 
 <script>
-    // Update summary cards with animation
     function animateValue(element, start, end, duration) {
         let startTimestamp = null;
         const step = (timestamp) => {
@@ -596,7 +680,6 @@
         window.requestAnimationFrame(step);
     }
 
-    // Update stats
     setTimeout(() => {
         animateValue(document.getElementById('totalCrops'), 0, <%= totalCrops %>, 1000);
         animateValue(document.getElementById('totalArea'), 0, Math.round(<%= totalArea %>), 1000);

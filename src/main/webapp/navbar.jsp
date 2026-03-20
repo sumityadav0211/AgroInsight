@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>AgroInsights - Farmer's Hub</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -38,13 +38,14 @@
 
         body {
             background: var(--light-bg);
+            overflow-x: hidden;
         }
 
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 5%;
+            padding: 0.8rem 5%;
             background: var(--white);
             box-shadow: var(--shadow);
             position: sticky;
@@ -53,7 +54,8 @@
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.98);
             min-height: 70px;
-            gap: 2rem;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .logo {
@@ -61,7 +63,7 @@
             align-items: center;
             gap: 0.8rem;
             flex-shrink: 0;
-            min-width: 200px;
+            text-decoration: none;
         }
 
         .logo-icon {
@@ -82,11 +84,10 @@
             display: flex;
             flex-direction: column;
             line-height: 1.2;
-            white-space: nowrap;
         }
 
         .logo-main {
-            font-size: 1.5rem;
+            font-size: clamp(1rem, 4vw, 1.5rem);
             font-weight: 700;
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
             -webkit-background-clip: text;
@@ -95,7 +96,7 @@
         }
 
         .logo-sub {
-            font-size: 0.75rem;
+            font-size: clamp(0.6rem, 2.5vw, 0.75rem);
             color: var(--text-light);
             font-weight: 500;
             letter-spacing: 0.5px;
@@ -107,20 +108,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-width: 0; /* Allow shrinking */
         }
 
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 0.8rem;
+            gap: 0.5rem;
             align-items: center;
             background: var(--gray-light);
-            padding: 0.5rem;
+            padding: 0.4rem;
             border-radius: 50px;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
-            max-width: 100%;
-            overflow: hidden;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .nav-item {
@@ -131,19 +131,18 @@
             text-decoration: none;
             color: var(--text-dark);
             font-weight: 500;
-            font-size: 0.9rem;
-            padding: 0.6rem 1.2rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             white-space: nowrap;
-            min-width: 0;
         }
 
         .nav-link i {
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
             opacity: 0.8;
             flex-shrink: 0;
         }
@@ -177,32 +176,27 @@
         .user-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             flex-shrink: 0;
-            min-width: 250px;
-            justify-content: flex-end;
         }
 
         /* Profile Section */
         .profile-section {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            width: 100%;
-            justify-content: flex-end;
+            gap: 0.8rem;
         }
 
         .user-profile {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
             background: rgba(46, 125, 50, 0.08);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 50px;
             transition: var(--transition);
             text-decoration: none;
             flex-shrink: 0;
-            max-width: 220px;
         }
 
         .user-profile:hover {
@@ -229,25 +223,22 @@
         .user-info {
             display: flex;
             flex-direction: column;
-            min-width: 0;
         }
 
         .user-name {
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .user-role {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-light);
             font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .admin-badge {
@@ -255,7 +246,7 @@
             color: white;
             padding: 0.15rem 0.5rem;
             border-radius: 12px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -266,7 +257,7 @@
         .btn-logout {
             background: var(--danger-color);
             color: white;
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 50px;
             font-weight: 600;
             text-decoration: none;
@@ -275,7 +266,7 @@
             gap: 0.5rem;
             transition: var(--transition);
             flex-shrink: 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .btn-logout:hover {
@@ -287,15 +278,15 @@
         /* Auth Buttons */
         .auth-buttons {
             display: flex;
-            gap: 0.8rem;
+            gap: 0.6rem;
             flex-shrink: 0;
         }
 
         .btn {
-            padding: 0.6rem 1.5rem;
+            padding: 0.5rem 1.2rem;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-decoration: none;
             transition: var(--transition);
             display: flex;
@@ -349,117 +340,6 @@
             transition: var(--transition);
         }
 
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .navbar {
-                padding: 1rem 3%;
-                gap: 1.5rem;
-            }
-
-            .nav-links {
-                gap: 0.5rem;
-                padding: 0.4rem;
-            }
-
-            .nav-link {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
-            }
-
-            .user-profile {
-                max-width: 180px;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .nav-center {
-                display: none;
-            }
-
-            .menu-toggle {
-                display: flex;
-            }
-
-            .navbar {
-                justify-content: space-between;
-                gap: 1rem;
-            }
-
-            .logo {
-                min-width: auto;
-            }
-
-            .user-actions {
-                min-width: auto;
-                justify-content: flex-end;
-            }
-
-            .user-profile .user-info {
-                display: none;
-            }
-
-            .user-profile {
-                padding: 0.5rem;
-                max-width: auto;
-            }
-
-            .btn-logout span {
-                display: none;
-            }
-
-            .btn-logout {
-                padding: 0.6rem;
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0.8rem 2%;
-                min-height: 60px;
-            }
-
-            .logo-text {
-                display: none;
-            }
-
-            .logo {
-                min-width: auto;
-            }
-
-            .logo-icon {
-                width: 36px;
-                height: 36px;
-                font-size: 1.4rem;
-            }
-
-            .auth-buttons .btn span {
-                display: none;
-            }
-
-            .auth-buttons .btn {
-                padding: 0.6rem;
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .user-avatar {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
-            }
-
-            .btn-logout, .auth-buttons .btn {
-                width: 36px;
-                height: 36px;
-            }
-        }
-
         /* Mobile Menu */
         .mobile-menu {
             position: fixed;
@@ -467,7 +347,7 @@
             left: 0;
             right: 0;
             background: var(--white);
-            padding: 1.5rem;
+            padding: 1rem;
             box-shadow: var(--shadow-lg);
             border-top: 1px solid rgba(0, 0, 0, 0.1);
             transform: translateY(-100%);
@@ -489,20 +369,21 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .mobile-nav-link {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1rem 1.5rem;
+            padding: 0.8rem 1rem;
             background: var(--gray-light);
             border-radius: var(--radius);
             text-decoration: none;
             color: var(--text-dark);
             font-weight: 500;
             transition: var(--transition);
+            font-size: 0.95rem;
         }
 
         .mobile-nav-link.active {
@@ -521,6 +402,28 @@
             gap: 0.8rem;
         }
 
+        .mobile-auth-buttons .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.8rem;
+        }
+
+        .mobile-profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .mobile-user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: var(--gray-light);
+            border-radius: var(--radius);
+            text-decoration: none;
+        }
+
         /* Animation */
         @keyframes fadeIn {
             from {
@@ -533,18 +436,6 @@
             }
         }
 
-        .nav-link {
-            animation: fadeIn 0.3s ease forwards;
-            opacity: 0;
-        }
-
-        .nav-link:nth-child(1) { animation-delay: 0.1s; }
-        .nav-link:nth-child(2) { animation-delay: 0.2s; }
-        .nav-link:nth-child(3) { animation-delay: 0.3s; }
-        .nav-link:nth-child(4) { animation-delay: 0.4s; }
-        .nav-link:nth-child(5) { animation-delay: 0.5s; }
-
-        /* Mobile Menu Animation */
         .menu-toggle.active span:nth-child(1) {
             transform: rotate(45deg) translate(6px, 6px);
         }
@@ -557,11 +448,117 @@
             transform: rotate(-45deg) translate(6px, -6px);
         }
 
-        /* Prevent text overflow */
-        .text-truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .navbar {
+                padding: 0.8rem 3%;
+                gap: 0.8rem;
+            }
+
+            .nav-links {
+                gap: 0.3rem;
+                padding: 0.3rem;
+            }
+
+            .nav-link {
+                padding: 0.4rem 0.8rem;
+            }
+
+            .user-profile {
+                padding: 0.3rem 0.6rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-center {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .navbar {
+                justify-content: space-between;
+                flex-wrap: nowrap;
+            }
+
+            .logo-text {
+                display: flex;
+            }
+
+            .btn-logout span {
+                display: none;
+            }
+
+            .btn-logout {
+                padding: 0.5rem;
+                width: 36px;
+                height: 36px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 0.6rem 4%;
+                min-height: 60px;
+            }
+
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1.4rem;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+
+            .btn-logout, .auth-buttons .btn {
+                width: 36px;
+                height: 36px;
+                padding: 0.5rem;
+                justify-content: center;
+            }
+
+            .auth-buttons .btn span {
+                display: none;
+            }
+
+            .mobile-menu {
+                top: 60px;
+                max-height: calc(100vh - 60px);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.2rem;
+            }
+
+            .user-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
+
+            .btn-logout, .auth-buttons .btn {
+                width: 32px;
+                height: 32px;
+            }
         }
     </style>
 </head>
@@ -584,7 +581,7 @@
 
 <nav class="navbar">
     <!-- Logo Section - Left -->
-    <div class="logo">
+    <a href="index.jsp" class="logo">
         <div class="logo-icon">
             <i class='bx bx-leaf'></i>
         </div>
@@ -592,7 +589,7 @@
             <span class="logo-main">AgroInsights</span>
             <span class="logo-sub">Farmer's Intelligent Hub</span>
         </div>
-    </div>
+    </a>
 
     <!-- Navigation Center Section -->
     <div class="nav-center">
@@ -649,14 +646,14 @@
             </li>
 
             <li class="nav-item">
-                <a href="adminUser.jsp" class="nav-link <%= currentPage.endsWith("manageUsers.jsp") ? "active" : "" %>">
+                <a href="adminUser.jsp" class="nav-link <%= currentPage.endsWith("adminUser.jsp") ? "active" : "" %>">
                     <i class='bx bx-user-plus'></i>
                     <span>Users</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a href="analytics.jsp" class="nav-link <%= currentPage.endsWith("reports.jsp") ? "active" : "" %>">
+                <a href="analytics.jsp" class="nav-link <%= currentPage.endsWith("analytics.jsp") ? "active" : "" %>">
                     <i class='bx bx-bar-chart'></i>
                     <span>Analytics</span>
                 </a>
@@ -675,10 +672,10 @@
                     <%= avatarLetter %>
                 </div>
                 <div class="user-info">
-                    <span class="user-name text-truncate"><%= username %></span>
+                    <span class="user-name"><%= username %></span>
                     <span class="user-role">
-                            <%= isAdmin ? "Administrator" : "Farmer" %>
-                        </span>
+                        <%= isAdmin ? "Administrator" : "Farmer" %>
+                    </span>
                 </div>
             </a>
 
@@ -748,11 +745,11 @@
             <i class='bx bx-dashboard'></i>
             <span>Dashboard</span>
         </a>
-        <a href="adminUser.jsp" class="mobile-nav-link <%= currentPage.endsWith("manageUsers.jsp") ? "active" : "" %>">
+        <a href="adminUser.jsp" class="mobile-nav-link <%= currentPage.endsWith("adminUser.jsp") ? "active" : "" %>">
             <i class='bx bx-user-plus'></i>
             <span>Manage Users</span>
         </a>
-        <a href="reports.jsp" class="mobile-nav-link <%= currentPage.endsWith("reports.jsp") ? "active" : "" %>">
+        <a href="analytics.jsp" class="mobile-nav-link <%= currentPage.endsWith("analytics.jsp") ? "active" : "" %>">
             <i class='bx bx-bar-chart'></i>
             <span>Analytics</span>
         </a>
@@ -771,20 +768,20 @@
         </a>
     </div>
     <% } else { %>
-    <div class="profile-section" style="flex-direction: column; width: 100%;">
-        <a href="<%= isAdmin ? "Admin.jsp" : "profile.jsp" %>" class="user-profile" style="width: 100%; justify-content: center;">
-            <div class="user-avatar">
+    <div class="mobile-profile-section">
+        <a href="<%= isAdmin ? "Admin.jsp" : "profile.jsp" %>" class="mobile-user-profile">
+            <div class="user-avatar" style="width: 40px; height: 40px;">
                 <%= avatarLetter %>
             </div>
-            <div class="user-info">
-                <span class="user-name"><%= username %></span>
-                <span class="user-role">
+            <div class="user-info" style="display: block;">
+                <span class="user-name" style="font-size: 1rem;"><%= username %></span>
+                <span class="user-role" style="font-size: 0.75rem;">
                     <%= isAdmin ? "Administrator" : "Farmer" %>
                 </span>
             </div>
         </a>
 
-        <a href="logout.jsp" class="btn-logout" style="width: 100%; justify-content: center; margin-top: 1rem;">
+        <a href="logout.jsp" class="btn btn-danger" style="background: var(--danger-color); color: white; justify-content: center; padding: 0.8rem;">
             <i class='bx bx-log-out'></i>
             <span>Logout</span>
         </a>
@@ -798,49 +795,53 @@
     const mobileMenu = document.getElementById('mobileMenu');
     const body = document.body;
 
-    menuToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        menuToggle.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
+    if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
 
-        // Prevent body scroll when menu is open
-        if (mobileMenu.classList.contains('active')) {
-            body.style.overflow = 'hidden';
-        } else {
-            body.style.overflow = 'auto';
-        }
-    });
-
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        const isClickInsideMenu = mobileMenu.contains(event.target);
-        const isClickOnToggle = menuToggle.contains(event.target);
-
-        if (!isClickInsideMenu && !isClickOnToggle && mobileMenu.classList.contains('active')) {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            body.style.overflow = 'auto';
-        }
-    });
-
-    // Close mobile menu when clicking a link
-    const mobileLinks = document.querySelectorAll('.mobile-nav-link, .btn, .user-profile, .btn-logout');
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', () => {
+            // Prevent body scroll when menu is open
             if (mobileMenu.classList.contains('active')) {
+                body.style.overflow = 'hidden';
+            } else {
+                body.style.overflow = 'auto';
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const isClickInsideMenu = mobileMenu.contains(event.target);
+            const isClickOnToggle = menuToggle.contains(event.target);
+
+            if (!isClickInsideMenu && !isClickOnToggle && mobileMenu.classList.contains('active')) {
                 menuToggle.classList.remove('active');
                 mobileMenu.classList.remove('active');
                 body.style.overflow = 'auto';
             }
         });
-    });
+
+        // Close mobile menu when clicking a link
+        const mobileLinks = document.querySelectorAll('.mobile-nav-link, .mobile-user-profile, .btn-logout, .mobile-auth-buttons .btn');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    body.style.overflow = 'auto';
+                }
+            });
+        });
+    }
 
     // Handle window resize
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 992) {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            body.style.overflow = 'auto';
+        if (window.innerWidth > 900) {
+            if (menuToggle && menuToggle.classList.contains('active')) {
+                menuToggle.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.style.overflow = 'auto';
+            }
         }
     });
 </script>

@@ -12,13 +12,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Add New User | AgroInsights</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Previous styles remain the same */
         :root {
             --primary-color: #2e7d32;
             --primary-dark: #1b5e20;
@@ -50,7 +49,7 @@
         body {
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             min-height: 100vh;
-            padding-bottom: 2rem;
+            overflow-x: hidden;
         }
 
         .container {
@@ -59,24 +58,31 @@
             padding: 0 1rem;
         }
 
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+            }
+        }
+
         .header {
             text-align: center;
             margin-bottom: 2rem;
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: clamp(1.3rem, 5vw, 2rem);
             color: var(--primary-dark);
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .header p {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
         }
 
         .back-link {
@@ -87,10 +93,15 @@
             text-decoration: none;
             margin-bottom: 1rem;
             transition: var(--transition);
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            border-radius: 50px;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
         }
 
         .back-link:hover {
             color: var(--primary-color);
+            background: var(--border-color);
         }
 
         .form-card {
@@ -99,6 +110,12 @@
             padding: 2rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1.5rem;
+            }
         }
 
         .form-group {
@@ -110,7 +127,7 @@
             margin-bottom: 0.5rem;
             color: var(--text-dark);
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
 
         .form-group label i {
@@ -121,10 +138,10 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 0.9rem 1rem;
+            padding: 0.8rem 1rem;
             border: 2px solid var(--border-color);
             border-radius: var(--radius-sm);
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
             transition: var(--transition);
             background: var(--light-bg);
         }
@@ -142,16 +159,16 @@
 
         .error-message {
             color: var(--danger-color);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             margin-top: 0.3rem;
             display: none;
         }
 
         .password-strength {
             margin-top: 0.5rem;
-            height: 5px;
+            height: 4px;
             background: var(--border-color);
-            border-radius: 3px;
+            border-radius: 2px;
             overflow: hidden;
         }
 
@@ -177,7 +194,7 @@
         }
 
         .strength-text {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             margin-top: 0.3rem;
             text-align: right;
         }
@@ -187,6 +204,7 @@
             align-items: center;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .checkbox-group input[type="checkbox"] {
@@ -194,19 +212,13 @@
             margin-right: 0.5rem;
         }
 
-        .checkbox-group label {
-            display: inline;
-            margin: 0;
-            cursor: pointer;
-        }
-
         .role-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.3rem;
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-weight: 500;
             margin-top: 0.5rem;
         }
@@ -229,12 +241,19 @@
             margin-top: 2rem;
         }
 
+        @media (max-width: 480px) {
+            .form-actions {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+
         .btn {
             flex: 1;
-            padding: 1rem;
+            padding: 0.9rem;
             border: none;
             border-radius: var(--radius-sm);
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -259,10 +278,6 @@
             box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3);
         }
 
-        .btn-primary.admin-mode:hover:not(:disabled) {
-            box-shadow: 0 10px 20px rgba(156, 39, 176, 0.3);
-        }
-
         .btn-primary:disabled {
             opacity: 0.7;
             cursor: not-allowed;
@@ -284,11 +299,20 @@
             top: 20px;
             right: 20px;
             z-index: 1000;
-            max-width: 400px;
+            max-width: 350px;
+            width: calc(100% - 40px);
+        }
+
+        @media (max-width: 480px) {
+            .message-container {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
         }
 
         .alert {
-            padding: 1rem 1.5rem;
+            padding: 1rem 1.2rem;
             border-radius: var(--radius-sm);
             margin-bottom: 1rem;
             display: flex;
@@ -323,10 +347,11 @@
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 0.2rem;
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem);
         }
 
         .alert-message {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-light);
         }
 
@@ -335,10 +360,6 @@
             cursor: pointer;
             transition: var(--transition);
             font-size: 1.2rem;
-        }
-
-        .close-alert:hover {
-            color: var(--text-dark);
         }
 
         @keyframes slideIn {
@@ -354,9 +375,9 @@
 
         .spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,.3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
@@ -364,26 +385,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 1rem auto;
-            }
-
-            .form-card {
-                padding: 1.5rem;
-            }
-
-            .form-actions {
-                flex-direction: column;
-            }
-
-            .message-container {
-                left: 20px;
-                right: 20px;
-                max-width: none;
-            }
         }
     </style>
 </head>
@@ -406,22 +407,19 @@
         <form action="AdminAddUserServlet" method="post" id="addUserForm" target="hiddenFrame" onsubmit="return handleFormSubmit()">
             <div class="form-group">
                 <label><i class='bx bxs-user'></i> Username *</label>
-                <input type="text" name="username" id="username" required
-                       placeholder="Enter username" minlength="3" maxlength="50">
+                <input type="text" name="username" id="username" required placeholder="Enter username" minlength="3" maxlength="50">
                 <div class="error-message" id="usernameError">Username must be at least 3 characters</div>
             </div>
 
             <div class="form-group">
                 <label><i class='bx bxs-envelope'></i> Email Address *</label>
-                <input type="email" name="email" id="email" required
-                       placeholder="Enter email address">
+                <input type="email" name="email" id="email" required placeholder="Enter email address">
                 <div class="error-message" id="emailError">Please enter a valid email address</div>
             </div>
 
             <div class="form-group">
                 <label><i class='bx bxs-lock-alt'></i> Password *</label>
-                <input type="password" name="password" id="password" required
-                       placeholder="Enter password" minlength="6" onkeyup="checkPasswordStrength()">
+                <input type="password" name="password" id="password" required placeholder="Enter password" minlength="6" onkeyup="checkPasswordStrength()">
                 <div class="password-strength">
                     <div class="strength-bar" id="strengthBar"></div>
                 </div>
@@ -431,8 +429,7 @@
 
             <div class="form-group">
                 <label><i class='bx bxs-lock-alt'></i> Confirm Password *</label>
-                <input type="password" name="confirmPassword" id="confirmPassword" required
-                       placeholder="Confirm password" onkeyup="checkPasswordMatch()">
+                <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="Confirm password" onkeyup="checkPasswordMatch()">
                 <div class="error-message" id="confirmError">Passwords do not match</div>
             </div>
 
@@ -470,7 +467,6 @@
     </div>
 </div>
 
-<!-- Hidden iframe to handle form submission without page refresh -->
 <iframe name="hiddenFrame" style="display: none;"></iframe>
 
 <script>
@@ -485,91 +481,53 @@
             submitText.textContent = 'Create Administrator';
             submitIcon.className = 'bx bx-shield-quarter';
             submitBtn.classList.add('admin-mode');
-
             roleBadge.innerHTML = '<i class="bx bx-shield"></i> Administrator Account';
             roleBadge.className = 'role-badge role-badge-admin';
         } else {
             submitText.textContent = 'Create Farmer';
             submitIcon.className = 'bx bx-save';
             submitBtn.classList.remove('admin-mode');
-
             roleBadge.innerHTML = '<i class="bx bx-user"></i> Farmer Account';
             roleBadge.className = 'role-badge role-badge-farmer';
         }
     }
 
     function handleFormSubmit() {
-        if (!validateForm()) {
-            return false;
-        }
-
+        if (!validateForm()) return false;
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('submitText');
         const btnIcon = document.getElementById('submitIcon');
-
         btnIcon.className = 'bx bx-loader-alt bx-spin';
         btnText.textContent = ' Creating...';
         submitBtn.disabled = true;
-
         return true;
     }
 
     function showSuccessMessage(username, role) {
         hideLoading();
-
         const messageContainer = document.getElementById('messageContainer');
         const messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-success';
-
         const roleText = (role === 'admin') ? 'Administrator' : 'Farmer';
-
-        messageDiv.innerHTML =
-            '<i class="bx bx-check-circle"></i>' +
-            '<div class="alert-content">' +
-            '<div class="alert-title">Success!</div>' +
-            '<div class="alert-message">' + roleText + ' "' + username + '" has been created successfully.</div>' +
-            '</div>' +
-            '<i class="bx bx-x close-alert" onclick="this.parentElement.remove()"></i>';
-
+        messageDiv.innerHTML = '<i class="bx bx-check-circle"></i><div class="alert-content"><div class="alert-title">Success!</div><div class="alert-message">' + roleText + ' "' + username + '" has been created successfully.</div></div><i class="bx bx-x close-alert" onclick="this.parentElement.remove()"></i>';
         messageContainer.appendChild(messageDiv);
-
         document.getElementById('addUserForm').reset();
         document.getElementById('roleSelect').value = 'user';
         updateButtonText();
-
         document.getElementById('strengthBar').className = 'strength-bar';
         document.getElementById('strengthBar').style.width = '0%';
         document.getElementById('strengthText').textContent = '';
-
-        setTimeout(() => {
-            if (messageDiv.parentElement) {
-                messageDiv.remove();
-            }
-        }, 5000);
+        setTimeout(() => { if (messageDiv.parentElement) messageDiv.remove(); }, 5000);
     }
 
     function showErrorMessage(errorMessage) {
         hideLoading();
-
         const messageContainer = document.getElementById('messageContainer');
         const messageDiv = document.createElement('div');
         messageDiv.className = 'alert alert-error';
-
-        messageDiv.innerHTML =
-            '<i class="bx bx-error-circle"></i>' +
-            '<div class="alert-content">' +
-            '<div class="alert-title">Error!</div>' +
-            '<div class="alert-message">' + errorMessage + '</div>' +
-            '</div>' +
-            '<i class="bx bx-x close-alert" onclick="this.parentElement.remove()"></i>';
-
+        messageDiv.innerHTML = '<i class="bx bx-error-circle"></i><div class="alert-content"><div class="alert-title">Error!</div><div class="alert-message">' + errorMessage + '</div></div><i class="bx bx-x close-alert" onclick="this.parentElement.remove()"></i>';
         messageContainer.appendChild(messageDiv);
-
-        setTimeout(() => {
-            if (messageDiv.parentElement) {
-                messageDiv.remove();
-            }
-        }, 5000);
+        setTimeout(() => { if (messageDiv.parentElement) messageDiv.remove(); }, 5000);
     }
 
     function hideLoading() {
@@ -577,7 +535,6 @@
         const btnText = document.getElementById('submitText');
         const btnIcon = document.getElementById('submitIcon');
         const roleSelect = document.getElementById('roleSelect');
-
         if (roleSelect.value === 'admin') {
             btnIcon.className = 'bx bx-shield-quarter';
             btnText.textContent = 'Create Administrator';
@@ -585,44 +542,26 @@
             btnIcon.className = 'bx bx-save';
             btnText.textContent = 'Create Farmer';
         }
-
         submitBtn.disabled = false;
     }
 
     function validateForm() {
         let isValid = true;
-
-        document.querySelectorAll('.error-message').forEach(el => {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('input').forEach(el => {
-            el.classList.remove('error');
-        });
+        document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
 
         const username = document.getElementById('username').value.trim();
-        if (username.length < 3) {
-            showFieldError('username', 'Username must be at least 3 characters');
-            isValid = false;
-        }
+        if (username.length < 3) { showFieldError('username', 'Username must be at least 3 characters'); isValid = false; }
 
         const email = document.getElementById('email').value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            showFieldError('email', 'Please enter a valid email address');
-            isValid = false;
-        }
+        if (!emailRegex.test(email)) { showFieldError('email', 'Please enter a valid email address'); isValid = false; }
 
         const password = document.getElementById('password').value;
-        if (password.length < 6) {
-            showFieldError('password', 'Password must be at least 6 characters');
-            isValid = false;
-        }
+        if (password.length < 6) { showFieldError('password', 'Password must be at least 6 characters'); isValid = false; }
 
         const confirmPassword = document.getElementById('confirmPassword').value;
-        if (password !== confirmPassword) {
-            showFieldError('confirm', 'Passwords do not match');
-            isValid = false;
-        }
+        if (password !== confirmPassword) { showFieldError('confirm', 'Passwords do not match'); isValid = false; }
 
         return isValid;
     }
@@ -630,7 +569,6 @@
     function showFieldError(fieldId, message) {
         const field = document.getElementById(fieldId);
         const errorElement = document.getElementById(fieldId + 'Error');
-
         field.classList.add('error');
         errorElement.textContent = message;
         errorElement.style.display = 'block';
@@ -640,24 +578,19 @@
         const password = document.getElementById('password').value;
         const strengthBar = document.getElementById('strengthBar');
         const strengthText = document.getElementById('strengthText');
-
         strengthBar.className = 'strength-bar';
-
         if (password.length === 0) {
             strengthBar.style.width = '0%';
             strengthText.textContent = '';
             return;
         }
-
         let strength = 0;
-
         if (password.length >= 8) strength += 1;
         if (password.length >= 12) strength += 1;
         if (/[a-z]/.test(password)) strength += 1;
         if (/[A-Z]/.test(password)) strength += 1;
         if (/[0-9]/.test(password)) strength += 1;
         if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
-
         if (strength <= 2) {
             strengthBar.classList.add('strength-weak');
             strengthText.textContent = 'Weak password';
@@ -677,7 +610,6 @@
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         const confirmError = document.getElementById('confirmError');
-
         if (confirmPassword.length > 0 && password !== confirmPassword) {
             confirmError.style.display = 'block';
             document.getElementById('confirmPassword').classList.add('error');
@@ -691,15 +623,11 @@
         input.addEventListener('input', function() {
             this.classList.remove('error');
             const errorElement = document.getElementById(this.id + 'Error');
-            if (errorElement) {
-                errorElement.style.display = 'none';
-            }
+            if (errorElement) errorElement.style.display = 'none';
         });
     });
 
-    window.onload = function() {
-        updateButtonText();
-    };
+    window.onload = function() { updateButtonText(); };
 </script>
 </body>
 </html>

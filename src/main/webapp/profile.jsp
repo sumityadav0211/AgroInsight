@@ -2,6 +2,7 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.example.controller.DBConnection" %>
 
 <%
     if (session.getAttribute("userEmail") == null) {
@@ -37,7 +38,7 @@
 
     try {
         // Use connection pool utility
-        conn = com.example.util.DBConnection.getConnection();
+        conn = DBConnection.getConnection();
 
         // Fetch user details from farmdata table
         String userQuery = "SELECT * FROM farmdata WHERE email = ?";

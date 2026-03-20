@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.sql.*" %>
+<%@ page import="com.example.controller.DBConnection" %>
 
 <%
     if (session.getAttribute("username") == null) {
@@ -370,19 +371,23 @@
         double areaSum = 0;
         int periodSum = 0;
 
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
         try {
             // Use connection pool utility
-            Connection con = com.example.util.DBConnection.getConnection();
+            con = DBConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement(
+            ps = con.prepareStatement(
                     "SELECT farmer_name, farm_area, crop_name, contact_number, crop_dates, period FROM history_crop"
             );
 
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
     %>
 
     <!-- Timeline container with dynamic no-data class -->
-    <div class="timeline <%= !hasData ? "no-data" : "" %>">
+    <div class="timeline">
         <%
             int itemCount = 0;
             while (rs.next()) {
@@ -432,25 +437,29 @@
         </div>
         <%
             }
-
-            rs.close();
-            ps.close();
-            con.close();
-
-            if (!hasData) {
-        %>
-        <div class="no-history">
-            <i class='bx bxs-history'></i>
-            <h3>No Historical Records Found</h3>
-            <p>Complete your first crop to see it appear in the history timeline</p>
-        </div>
-        <%
-                }
-            } catch (Exception e) {
-                out.println("<div class='no-history' style='color: var(--danger-color);'>Error loading history: " + e.getMessage() + "</div>");
-            }
         %>
     </div>
+
+    <%
+        } catch (Exception e) {
+            out.println("<div class='no-history' style='color: var(--danger-color);'>Error loading history: " + e.getMessage() + "</div>");
+        } finally {
+            // Close resources
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (ps != null) ps.close(); } catch (Exception e) {}
+            try { if (con != null) con.close(); } catch (Exception e) {}
+        }
+
+        if (!hasData) {
+    %>
+    <div class="no-history">
+        <i class='bx bxs-history'></i>
+        <h3>No Historical Records Found</h3>
+        <p>Complete your first crop to see it appear in the history timeline</p>
+    </div>
+    <%
+        }
+    %>
 </div>
 
 <script>

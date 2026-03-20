@@ -1,3 +1,4 @@
+<%@ page import="com.example.controller.DBConnection" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.sql.*" %>
 
@@ -428,16 +429,19 @@
                 double totalArea = 0;
                 int totalPeriod = 0;
 
+                Connection con = null;
+                PreparedStatement ps = null;
+                ResultSet rs = null;
+
                 try {
                     // Use connection pool utility
-                    Connection con = com.example.util.DBConnection.getConnection();
+                    con = DBConnection.getConnection();
 
                     String sql;
-                    PreparedStatement ps;
 
                     if ("history".equals(type)) {
                         if ("admin".equals(role)) {
-                            if (selectedUser != null) {
+                            if (selectedUser != null && !selectedUser.isEmpty()) {
                                 sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
                                         "FROM history_crop WHERE username=?";
                                 ps = con.prepareStatement(sql);
@@ -455,7 +459,7 @@
                         }
                     } else {
                         if ("admin".equals(role)) {
-                            if (selectedUser != null) {
+                            if (selectedUser != null && !selectedUser.isEmpty()) {
                                 sql = "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period " +
                                         "FROM add_crop WHERE username=?";
                                 ps = con.prepareStatement(sql);
@@ -473,7 +477,7 @@
                         }
                     }
 
-                    ResultSet rs = ps.executeQuery();
+                    rs = ps.executeQuery();
 
                     while (rs.next()) {
                         hasData = true;
@@ -509,20 +513,20 @@
                 <td>
                     <div class="action-buttons">
                         <% if ("current".equals(type) || ("history".equals(type) && "admin".equals(role))) { %>
-                        <% if ("admin".equals(role) && selectedUser != null) { %>
+                        <% if ("admin".equals(role)) { %>
                         <form action="EditCrop" method="get" style="display: inline;">
                             <input type="hidden" name="id" value="<%= rs.getInt("id") %>">
+                            <% if (selectedUser != null && !selectedUser.isEmpty()) { %>
                             <input type="hidden" name="username" value="<%= selectedUser %>">
+                            <% } %>
                             <button type="submit" class="btn-action btn-edit">
                                 <i class='bx bx-edit'></i> Edit
                             </button>
                         </form>
-                        <% } %>
 
-                        <% if ("admin".equals(role)) { %>
                         <form action="DeleteCrop" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
-                            <button type="submit" class="btn-action btn-delete">
+                            <button type="submit" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to delete this crop?');">
                                 <i class='bx bx-trash'></i> Delete
                             </button>
                         </form>
@@ -531,14 +535,14 @@
                         <% if ("current".equals(type)) { %>
                         <form action="MoveToHistory" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
-                            <button type="submit" class="btn-action btn-move">
+                            <button type="submit" class="btn-action btn-move" onclick="return confirm('Are you sure you want to mark this crop as completed?');">
                                 <i class='bx bx-history'></i> Move
                             </button>
                         </form>
                         <% } else if ("admin".equals(role)) { %>
                         <form action="MoveCurrent" method="post" style="display: inline;">
                             <input type="hidden" name="cropId" value="<%= rs.getInt("id") %>">
-                            <button type="submit" class="btn-action btn-move">
+                            <button type="submit" class="btn-action btn-move" onclick="return confirm('Are you sure you want to restore this crop?');">
                                 <i class='bx bx-transfer'></i> Restore
                             </button>
                         </form>
@@ -548,36 +552,31 @@
                 </td>
             </tr>
             <%
-                }
-
-                rs.close();
-                ps.close();
-                con.close();
-
-                if (!hasData) {
-            %>
-            <tr>
-                <td colspan="5">
-                    <div class="no-data">
-                        <i class='bx bx-leaf'></i>
-                        <h3>No crop data found</h3>
-                        <p><%= "current".equals(type) ? "Add your first crop to get started" : "No historical records available" %></p>
-                        <% if ("current".equals(type)) { %>
-                        <a href="addcrop.jsp" class="btn-action btn-edit" style="margin-top: 1rem; display: inline-flex;">
-                            <i class='bx bx-plus'></i> Add New Crop
-                        </a>
-                        <% } %>
-                    </div>
-                </td>
-            </tr>
-            <%
                     }
                 } catch (Exception e) {
                     out.println("<tr><td colspan='5' style='color: var(--danger-color); padding: 2rem; text-align: center;'>Error: " + e.getMessage() + "</td></tr>");
+                } finally {
+                    // Close resources
+                    try { if (rs != null) rs.close(); } catch (Exception e) {}
+                    try { if (ps != null) ps.close(); } catch (Exception e) {}
+                    try { if (con != null) con.close(); } catch (Exception e) {}
                 }
             %>
             </tbody>
         </table>
+
+        <% if (!hasData) { %>
+        <div class="no-data">
+            <i class='bx bx-leaf'></i>
+            <h3>No crop data found</h3>
+            <p><%= "current".equals(type) ? "Add your first crop to get started" : "No historical records available" %></p>
+            <% if ("current".equals(type)) { %>
+            <a href="addcrop.jsp" class="btn-action btn-edit" style="margin-top: 1rem; display: inline-flex;">
+                <i class='bx bx-plus'></i> Add New Crop
+            </a>
+            <% } %>
+        </div>
+        <% } %>
     </div>
 </div>
 

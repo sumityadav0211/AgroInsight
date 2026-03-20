@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.sql.*" %>
+<%@ page import="com.example.controller.DBConnection" %>
 
 <%
     if (session.getAttribute("username") == null) {
@@ -430,17 +431,21 @@
             double areaSum = 0;
             int periodSum = 0;
 
+            Connection con = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
             try {
                 // Use connection pool utility
-                Connection con = com.example.util.DBConnection.getConnection();
+                con = DBConnection.getConnection();
 
                 // FIX: Always show all crops regardless of user role
                 // This query gets ALL crops from the database
-                PreparedStatement ps = con.prepareStatement(
+                ps = con.prepareStatement(
                         "SELECT id, farmer_name, farm_area, crop_name, contact_number, crop_dates, period, username FROM add_crop"
                 );
 
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
 
                 while (rs.next()) {
                     hasData = true;
@@ -518,11 +523,15 @@
             </div>
         </div>
         <%
+                }
+            } catch (Exception e) {
+                out.println("<div class='no-crops' style='color: var(--danger-color);'>Error loading crops: " + e.getMessage() + "</div>");
+            } finally {
+                // Close resources
+                try { if (rs != null) rs.close(); } catch (Exception e) {}
+                try { if (ps != null) ps.close(); } catch (Exception e) {}
+                try { if (con != null) con.close(); } catch (Exception e) {}
             }
-
-            rs.close();
-            ps.close();
-            con.close();
 
             if (!hasData) {
         %>
@@ -535,9 +544,6 @@
             </a>
         </div>
         <%
-                }
-            } catch (Exception e) {
-                out.println("<div class='no-crops' style='color: var(--danger-color);'>Error loading crops: " + e.getMessage() + "</div>");
             }
         %>
     </div>

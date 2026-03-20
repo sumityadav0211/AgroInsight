@@ -1,3 +1,6 @@
+
+
+<%@ page import="com.example.controller.DBConnection" %>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.SimpleDateFormat" %>
@@ -52,7 +55,7 @@
 
     try {
         // Use connection pool utility
-        conn = com.example.util.DBConnection.getConnection();
+        conn = DBConnection.getConnection();
         stmt = conn.createStatement();
 
         // Get database stats

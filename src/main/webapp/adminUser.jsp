@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.sql.*" %>
+<%@ page import="com.example.controller.DBConnection" %>
 
 <%
     if (session.getAttribute("role") == null || !"admin".equals(session.getAttribute("role"))) {
@@ -425,8 +426,8 @@
             <tbody id="userTableBody">
             <%
                 try {
-                    // Use connection pool utility
-                    Connection con = com.example.util.DBConnection.getConnection();
+                    // Use connection from controller package
+                    Connection con = DBConnection.getConnection();
 
                     // Get users with their email_verified status (PostgreSQL)
                     PreparedStatement ps = con.prepareStatement(

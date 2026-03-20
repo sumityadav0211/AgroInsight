@@ -1,6 +1,8 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.example.controller.DBConnection" %>
+
 
 <%
     if (session.getAttribute("userEmail") == null) {
@@ -36,7 +38,7 @@
 
     try {
         // Use the connection pool utility
-        conn = com.example.util.DBConnection.getConnection();
+        conn = DBConnection.getConnection();
         stmt = conn.createStatement();
 
         // 1. Fetch total users from farmdata table

@@ -2,6 +2,7 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.example.controller.DBConnection" %>
 
 <%
     if (session.getAttribute("role") == null || !"admin".equals(session.getAttribute("role"))) {
@@ -35,7 +36,7 @@
 
     try {
         // Use connection pool utility
-        conn = com.example.util.DBConnection.getConnection();
+        conn = DBConnection.getConnection();
 
         // Get all users
         String userQuery = "SELECT id, username, email, email_verified, created_at FROM farmdata ORDER BY created_at DESC";
